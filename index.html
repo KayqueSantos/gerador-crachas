@@ -1,0 +1,76 @@
+<!-- 
+Projeto - Teste Prático Backend Even3 
+Autor: Kayque Lucas Santana dos Santos
+Email: klss@cin.ufpe.br
+Data: 2019-02-24
+
+Descrição: Página principal - Gerador de crachás.
+
+Copyright(c) 2018 Kayque Lucas Santana dos Santos
+-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Gerador de Crachás</title>
+		<meta charset="utf-8">
+
+		<style type="text/css">
+
+	
+		</style>
+
+	</head>
+	<body>
+		<div>
+		<h3>1 - Criar Modelo</h3>
+
+		<p>Anexar Imagem de fundo <a href="https://drive.google.com/file/d/1mzo2vOi_y2QorVCNk2stRGymUZwfUbQi/view?usp=sharing">Dica: Templates</a> </p> 
+
+		<form id="uploadImg" action="/uploads" method="post" enctype="multipart/form-data">
+			<input type='file' accept='image/*' name='img'><br> <!--Imagem de fundo do crachá a ser enviada pelo usuário. -->
+			<input type="submit" value="Enviar">
+		</form>
+		
+		<div id="viewLayout" width="2">
+			<img width="300" src="/imagemdefundo.png">
+		</div>
+
+		<p>Especifique na caixa abaixo as informações que serão colocadas no crachá(ex: nome, função, e-mail, instituição, etc), separando-as por chaves. Ex:{nome}{instituição}{idade}. <br> Depois selecione a formatação desejada para o texto.</p>
+
+		<input type="text" name="tagsCracha" size="75" id="tagsCracha"></textarea><br>
+
+		<input type="checkbox" name="tag1negr" value=1> Negrito    
+		<input type="checkbox" name="tag1ital" value=1> Itálico
+		Tamanho da fonte: <select name="tag1font">
+		<option value="1">Pequena</option>
+   		<option value="2">Média</option>
+		<option value="3">Grande</option>
+		</select>
+
+		</div>
+
+		<div>
+		<hr>
+		<h3>2 - Importar participantes</h3>
+
+		<textarea placeholder="Copie o conteúdo da planilha excel, incluindo os cabeçalhos, e cole aqui." name="conteudo" cols="75" rows="15" id="text-input"></textarea>
+
+
+		</div>
+
+		<div>
+		<hr>
+		<h3> 3 - Baixar</h3>
+
+		<button id="btnBaixar">Baixar Crachás</button> <!--Ao clicar no botão baixar, a função gerarCrachás será chamada. -->
+
+		<script type="text/javascript">
+			
+
+		</script>
+
+		</div>
+
+	</body>
+</html>
