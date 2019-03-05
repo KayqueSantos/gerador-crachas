@@ -15,62 +15,87 @@ Copyright(c) 2018 Kayque Lucas Santana dos Santos
 		<title>Gerador de Crachás</title>
 		<meta charset="utf-8">
 
-		<style type="text/css">
+		<script src="scripts/require.js"> </script>
+		<script src="scripts/jquery-3.3.1.js"></script>
 
-	
+		<style type="text/css">
 		</style>
 
 	</head>
 	<body>
 		<div>
-		<h3>1 - Criar Modelo</h3>
+		<h5>1 - Criar Modelo</h5>
 
 		<p>Anexar Imagem de fundo <a href="https://drive.google.com/file/d/1mzo2vOi_y2QorVCNk2stRGymUZwfUbQi/view?usp=sharing">Dica: Templates</a> </p> 
 
 		<form id="uploadImg" action="/uploads" method="post" enctype="multipart/form-data">
-			<input type='file' accept='image/*' name='img'><br> <!--Imagem de fundo do crachá a ser enviada pelo usuário. -->
+			<input type='file' accept='image/jpeg,image/png' id="imgInput" name='img'><br><!--Imagem de fundo do crachá a ser enviada pelo usuário. -->
 			<input type="submit" value="Enviar">
 		</form>
+
+		<p>Anexar Logo do Evento (Opcional)</p>
+		<form id="uploadLogo" action="/uploads" method="post" enctype="multipart/form-data">
+			<input type='file' accept='image/png' id="logoInput" name='img'><br><!--Imagem de logo do evento a ser enviada pelo usuário. -->
+			<input type="submit" value="Enviar">
+		</form> <br>
+
 		
-		<div id="viewLayout" width="2">
-			<img width="300" src="/imagemdefundo.png">
+		<!--Visualizador da imagem de fundo. -->
+		<div id="viewLayout"></div>
+
+		<!--Script para pegar a imagem e gerar o visualizador. -->
+		<script type="text/javascript">
+			document.getElementById("uploadImg").addEventListener('submit', setViewer);
+			function setViewer() {
+				var viewImg = document.createElement("img");
+				var srcName = "/uploads/"+document.getElementById("imgInput").files[0].name
+				viewImg.setAttribute('src', srcName);
+				viewImg.setAttribute('alt', 'na');
+				viewImg.setAttribute('width', "300");
+				var viewContainer = document.getElementById('viewLayout');
+				$.get(srcName)
+				    .done(function() { 
+				        if (viewContainer.hasChildNodes()) {
+							viewContainer.removeChild(viewContainer.childNodes[0]);
+							viewContainer.appendChild(viewImg);
+						} else {
+							viewContainer.appendChild(viewImg);
+						}
+				    }).fail(function() { 
+
+				    })
+				
+			};
+		</script>
 		</div>
+		<input type="text" placeholder="Especifique as informações do crachá, separando-as por chaves. Ex:{nome}{instituição}{idade}." style="width: 600px;" name="tags" id="tagsInput"></textarea><br>
 
-		<p>Especifique na caixa abaixo as informações que serão colocadas no crachá(ex: nome, função, e-mail, instituição, etc), separando-as por chaves. Ex:{nome}{instituição}{idade}. <br> Depois selecione a formatação desejada para o texto.</p>
-
-		<input type="text" name="tagsCracha" size="75" id="tagsCracha"></textarea><br>
-
-		<input type="checkbox" name="tag1negr" value=1> Negrito    
-		<input type="checkbox" name="tag1ital" value=1> Itálico
-		Tamanho da fonte: <select name="tag1font">
+		<label for="negrito">Negrito</label><input type="checkbox" name="negrito" id="tagB">
+		<label for="italico">Italico</label><input type="checkbox" name="italico" id="tagI">  
+		<label for="fontsize">Tamanho da Fonte</label><select name="fontsize" id="tagF">
 		<option value="1">Pequena</option>
    		<option value="2">Média</option>
 		<option value="3">Grande</option>
 		</select>
+		<br>
+		<label for="logoPlace">Posição do Logo (Opcional) </label><select name="logoPlace" id="logoP">
+		<option value="1">Superior</option>
+   		<option value="2">Inferior</option>
+   		</select>
 
-		</div>
-
-		<div>
+		<!-------------------------------------------------------------------------------------------------------->
 		<hr>
-		<h3>2 - Importar participantes</h3>
+		<h5>2 - Importar participantes</h5>
 
-		<textarea placeholder="Copie o conteúdo da planilha excel, incluindo os cabeçalhos, e cole aqui." name="conteudo" cols="75" rows="15" id="text-input"></textarea>
+		<textarea placeholder="Copie o conteúdo da planilha excel, incluindo os cabeçalhos, e cole aqui." name="conteudo" cols="100" rows="20" id="text-input"></textarea>
 
 
-		</div>
 
-		<div>
+		<!-------------------------------------------------------------------------------------------------------->
 		<hr>
-		<h3> 3 - Baixar</h3>
+		<h5> 3 - Baixar</h5>
 
 		<button id="btnBaixar">Baixar Crachás</button> <!--Ao clicar no botão baixar, a função gerarCrachás será chamada. -->
-
-		<script type="text/javascript">
-			
-
-		</script>
-
-		</div>
-
+		<script type="text/javascript" src="scripts/script.js"></script>
 	</body>
 </html>
