@@ -47,6 +47,6 @@ Ao clicar baixar, é gerado um pdf contendo todos os crachás para o usuário fa
 
 ## Limitações
 
-1. A biblioteca Jimp. usada para a manipulação das imagens, só tem suporte para fontes do tipo Bitmap(FNT). Por essa razão, a formatação do texto nos crachás ficou um pouco limitada. A aplicação operece três tamanhos para o texto no crachá: pequeno, médio, e grande. O texto é escrito sempre com a fonte Open Sans, na cor preta, e é sempre centralizado.
+1. A biblioteca Jimp usada para a manipulação das imagens, só tem suporte para fontes do tipo Bitmap(FNT). Por essa razão, a formatação do texto nos crachás ficou um pouco limitada. A aplicação operece três tamanhos para o texto no crachá: pequeno, médio, e grande. O texto é escrito sempre com a fonte Open Sans, na cor preta, e é sempre centralizado.
 
 2. A função que gera o PDF é inicializada após um tempo que equivale a 10 segundos por cada crachá. Isso foi feito com o uso da função setTimeout, para evitar que a função de gerar PDF tentasse acessar as imagens do crachá antes que elas estivessem prontas. No entanto, podem ocorrer casos em que a função que escreve as imagens no crachá demore mais que o necessário, e nesses casos, a aplicação da erro e encerra.
