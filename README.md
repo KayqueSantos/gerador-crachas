@@ -37,13 +37,11 @@ $ node server.js
 
 ## Funcionamento da Aplicação
 
-A aplicação recebe do usuário uma imagem que servirá de plano de fundo para o usuário, e uma imagem de logo do evento, sendo esta última opcional. 
-Observação1: É importante que o usuário clique enviar, do contrário as imagens não serão enviadas para o servidor e a aplicação não funcionará.
+A aplicação recebe do usuário uma imagem que servirá de plano de fundo para o usuário, e uma imagem de logo do evento, sendo esta última opcional. (Observação 1: É importante que o usuário clique enviar, do contrário as imagens não serão enviadas para o servidor e a aplicação não funcionará.)
 
 O usuário digita, na primeira caixa de texto, as tags que serão inseridas nos crachás, isto é, os cabeçalhos da planilha. Abaixo desta, ele pode escolher algumas opções de formatação do texto e o posicionamento da logo no crachá, o qual só é levado em conta no caso em que a logo é inserida.
 
-Na segunda caixa de texto, ele deve colar o conteúdo da planilha diretamente do excel, incluindo os cabeçalhos.
-Observação: se o conteúdo inserido nessa caixa de texto não for diretamente do excel, o programa não funcionará corretamente.
+Na segunda caixa de texto, ele deve colar o conteúdo da planilha diretamente do excel, incluindo os cabeçalhos. (Observação 2: se o conteúdo inserido nessa caixa de texto não for diretamente do excel, o programa não funcionará corretamente.)
 
 Ao clicar baixar, é gerado um pdf contendo todos os crachás para o usuário fazer download.
 
