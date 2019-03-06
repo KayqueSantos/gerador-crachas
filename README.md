@@ -1,7 +1,7 @@
 # Gerador de Crachás
 
 Projeto de Desenvolvimento Web para Processo Seletivo Dev Backend - Even3
-A API recebe como input do usuário uma
+A aplicação gerá crachás automaticamente a partir de informações inseridas pelo usuário.
 
 ## Ferramentas de Desenvolvimento Utilizadas
 
