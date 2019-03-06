@@ -70,7 +70,7 @@ app.post('/baixarCrachas', (req, res) => {
 		};
 	});
 	//A função gerarPDF é chamada para gerar o PDF com todos os crachás
-	//Foi utilizada a função setTimeout, com um tempo que equivale a 5 segundos
+	//Foi utilizada a função setTimeout, com um tempo que equivale a 10 segundos
 	//para cada crachá gerado, para que a função aguarde o tempo necessário até que todos os
 	//arquivos estejam prontos
 	const time = conteudo.length*10000;
