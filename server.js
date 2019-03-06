@@ -41,6 +41,8 @@ app.get('/', (req, res) => {
 
 app.post('/uploads', upload.single('img'), (req, res) => {
 	console.log(req.body, req.file);
+	res.status(204).send();
+
 });
 
 //As duas instruções a seguir permitem que a aplicação acesse os arquivos upados no client-side
@@ -61,16 +63,19 @@ app.post('/baixarCrachas', (req, res) => {
 	//Após lidar com as informações passadas na requisição feita para/baixarCrachás, a função
 	//escreverCracha é chamada i vezes, sendo i o número de linhas do conteúdo da planilha
 	//inserido pelo usuário. É esperado que cada linha represente a informação de uma pessoa.
-	for (i in conteudo) {
-		escreverCracha(conteudo[i], fonte, nomeArquivoBg, nomeArquivoLogo, logoPlace, i);
-	};
+	Jimp.loadFont(publicDir+"resources/"+fonte+"/"+fonte+".fnt")
+	.then(font => {
+		for (i in conteudo) {
+			escreverCracha(conteudo[i], font, nomeArquivoBg, nomeArquivoLogo, logoPlace, i);
+		};
+	});
 	//A função gerarPDF é chamada para gerar o PDF com todos os crachás
 	//Foi utilizada a função setTimeout, com um tempo que equivale a 5 segundos
 	//para cada crachá gerado, para que a função aguarde o tempo necessário até que todos os
 	//arquivos estejam prontos
-	const time = conteudo.length*5000
+	const time = conteudo.length*10000;
 	setTimeout(function() {gerarPDF(conteudo.length)}, time);
-	res.setTimeout(time+1000, function() {
+	res.setTimeout(time+10000, function() {
 		res.end()});
 });
 
@@ -90,7 +95,7 @@ function processarConteudo2(conteudo) {
 	return conteudo;
 }
 
-function escreverCracha(conteudo, fonte, nomeArquivoBg, nomeArquivoLogo, logoPlace, indice) {
+function escreverCracha(conteudo, font, nomeArquivoBg, nomeArquivoLogo, logoPlace, indice) {
 	/*A função escreve todas as informações passadas no crachá. A variável conteúdo recebe as informações
 	propriamente fornecidas. 
 	A variável fonte é um código que define qual arquivo de fonte será carregado de acordo com a 
@@ -111,38 +116,34 @@ function escreverCracha(conteudo, fonte, nomeArquivoBg, nomeArquivoLogo, logoPla
 	
 		//O bloco de código a seguir carrega o arquivo de fonte de acordo com a formatação requerida
 		//pelo usuário e escreve as informações no crachá
-		Jimp.loadFont(publicDir+"resources/"+fonte+"/"+fonte+".fnt")
-		.then(font => {
 
-			for (i in conteudo) {
-    			var text = conteudo[i];
-    			var textWidth = Jimp.measureText(font, text);
-    			var textHeight = Jimp.measureTextHeight(font, text);
+		for (i in conteudo) {
+			var text = conteudo[i];
+			var textWidth = Jimp.measureText(font, text);
+			var textHeight = Jimp.measureTextHeight(font, text);
 
-				image.print(font, w/2 - textWidth/2, y, conteudo[i]);
-				y = y+textHeight;
-			}
-			//O bloco de código a seguir posiciona a logo do evento no crachá, caso o usuário tenha
-			//feito o upload. Caso não, ele apenas salva a imagem.
-	  		if(nomeArquivoLogo!=null) {
-				Jimp.read(publicDir+"uploads/"+nomeArquivoLogo)
-				.then(logo => {
-					logo.resize(Jimp.AUTO, h/4)
-					if(logoPlace==1){
-						var logoY = 30;
-					} else {
-						var logoY = h-logo.bitmap.height-30;
-					}
-					image.composite(logo, w/2-logo.bitmap.width/2, logoY);
-					//Como a imagem gerada do crachá é para fins de impressão, ela é sempre
-					//salva no formato jpg
-					image.write(publicDir+"uploads/crachas/Cracha-"+indice.toString()+".jpg");
-				});
-			} else {
+			image.print(font, w/2 - textWidth/2, y, conteudo[i]);
+			y = y+textHeight;
+		}
+		//O bloco de código a seguir posiciona a logo do evento no crachá, caso o usuário tenha
+		//feito o upload. Caso não, ele apenas salva a imagem.
+  		if(nomeArquivoLogo!=null) {
+			Jimp.read(publicDir+"uploads/"+nomeArquivoLogo)
+			.then(logo => {
+				logo.resize(Jimp.AUTO, h/4)
+				if(logoPlace==1){
+					var logoY = 40;
+				} else {
+					var logoY = h-logo.bitmap.height-40;
+				}
+				image.composite(logo, w/2-logo.bitmap.width/2, logoY);
+				//Como a imagem gerada do crachá é para fins de impressão, ela é sempre
+				//salva no formato jpg
 				image.write(publicDir+"uploads/crachas/Cracha-"+indice.toString()+".jpg");
-			}
-  		});
-		
+			});
+		} else {
+			image.write(publicDir+"uploads/crachas/Cracha-"+indice.toString()+".jpg");
+		}
 	})
   	.catch(err => {
     	console.error(err)
@@ -152,7 +153,7 @@ function escreverCracha(conteudo, fonte, nomeArquivoBg, nomeArquivoLogo, logoPla
 function gerarPDF(qtdCrachas, res) {
 	//A função recebe a quantidade de Crachas, e adiciona todas as imagens de crachás salvas
 	//na pasta /uploads/Crachás a um arquivo PDF
-	const doc = new PDFDocument();
+	const doc = new PDFDocument({autoFirstPage: false});
 	for (i = 0; i < qtdCrachas; i++){
 		fileDir=(publicDir+"uploads/crachas/Cracha-"+i.toString()+".jpg");
 		doc.addPage();
