@@ -1,3 +1,12 @@
+/*Projeto - Teste Prático Backend Even3 
+Autor: Kayque Lucas Santana dos Santos
+Email: klss@cin.ufpe.br
+Data: 2019-02-24
+
+Descrição: Client-side da API.
+
+Copyright(c) 2018 Kayque Lucas Santana dos Santos
+*/
 
 function baixarCrachas() {
 	// Cria os crachás com as informações especificadas no layout, e fornecidas pela planilha, e gera um pdf para download.
@@ -49,9 +58,45 @@ function gerarCrachas(conteudo, formatacao, nomeArquivoBg, nomeArquivoLogo, logo
 	var logoPlace = JSON.stringify(logoPlace);
 
 	$.post('/baixarCrachas', {conteudo: conteudo, formatacao: formatacao, nomeArquivoBg: nomeArquivoBg,
-								nomeArquivoLogo: nomeArquivoLogo, logoPlace: logoPlace});
+								nomeArquivoLogo: nomeArquivoLogo, logoPlace: logoPlace}, 
+								function () {window.open('/baixarCrachas')}
+			);
 }
 
 //Inicializa a função gerar crachás
 var btnBaixar = document.getElementById("btnBaixar");
 btnBaixar.addEventListener("click", baixarCrachas);
+
+//Configura um visualizador para a imagem de fundo enviada
+document.getElementById("uploadImg").addEventListener('submit', setViewerBg);
+function setViewerBg() {
+	var viewImg = document.createElement("img");
+	var srcName = "/uploads/"+document.getElementById("imgInput").files[0].name
+	setTimeout(function() {viewImg.setAttribute('src', srcName)}, 4000);;
+	viewImg.setAttribute('alt', 'na');
+	viewImg.setAttribute('width', "200");
+	var viewContainer = document.getElementById('viewBg');
+    if (viewContainer.hasChildNodes()) {
+		viewContainer.removeChild(viewContainer.childNodes[0]);
+		setTimeout(function() {viewContainer.appendChild(viewImg)}, 4000);
+	} else {
+		setTimeout(function() {viewContainer.appendChild(viewImg)}, 4000);
+	}
+};
+
+//Configura um visualizador para a imagem de logo enviada
+document.getElementById("uploadLogo").addEventListener('submit', setViewerLogo);
+function setViewerLogo() {
+	var viewImg = document.createElement("img");
+	var srcName = "/uploads/"+document.getElementById("logoInput").files[0].name
+	setTimeout(function() {viewImg.setAttribute('src', srcName)}, 4000);;
+	viewImg.setAttribute('alt', 'na');
+	viewImg.setAttribute('width', "200");
+	var viewContainer = document.getElementById('viewLogo');
+    if (viewContainer.hasChildNodes()) {
+		viewContainer.removeChild(viewContainer.childNodes[0]);
+		setTimeout(function() {viewContainer.appendChild(viewImg)}, 4000);
+	} else {
+		setTimeout(function() {viewContainer.appendChild(viewImg)}, 4000);
+	}
+};

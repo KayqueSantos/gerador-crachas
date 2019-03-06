@@ -3,7 +3,7 @@ Autor: Kayque Lucas Santana dos Santos
 Email: klss@cin.ufpe.br
 Data: 2019-02-24
 
-Descrição: Cria um servidor local para o backend.
+Descrição: Server-side da API.
 
 Copyright(c) 2018 Kayque Lucas Santana dos Santos
 */
@@ -18,7 +18,7 @@ const Jimp = require('Jimp');
 const multer = require('multer'); 
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 //Define o local de destino para o arquivo de imagem de fundo, e configura o nome do arquivo
@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/uploads', upload.single('img'), (req, res) => {
-	console.log(req.body, req.file)
+	console.log(req.body, req.file);
 });
 
 //As duas instruções a seguir permitem que a aplicação acesse os arquivos upados no client-side
@@ -59,15 +59,28 @@ app.post('/baixarCrachas', (req, res) => {
 	var logoPlace = JSON.parse(req.body.logoPlace);
 	var fonte = formatacao[0].toString()+formatacao[1].toString()+formatacao[2].toString()
 	//Após lidar com as informações passadas na requisição feita para/baixarCrachás, a função
-	//gescreverCracha é chamada i vezes, sendo i o número de linhas do conteúdo da planilha
+	//escreverCracha é chamada i vezes, sendo i o número de linhas do conteúdo da planilha
 	//inserido pelo usuário. É esperado que cada linha represente a informação de uma pessoa.
 	for (i in conteudo) {
 		escreverCracha(conteudo[i], fonte, nomeArquivoBg, nomeArquivoLogo, logoPlace, i);
 	};
-	//Quando todos os crachás são finalizados, a função gerarPDF é chamada para gerar o PDF com todos os crachás
-	gerarPDF(conteudo.length);
+	//A função gerarPDF é chamada para gerar o PDF com todos os crachás
+	//Foi utilizada a função setTimeout, com um tempo que equivale a 5 segundos
+	//para cada crachá gerado, para que a função aguarde o tempo necessário até que todos os
+	//arquivos estejam prontos
+	const time = conteudo.length*5000
+	setTimeout(function() {gerarPDF(conteudo.length)}, time);
+	res.setTimeout(time+1000, function() {
+		res.end()});
+});
 
-})
+
+//A requisição get é feita para baixar o arquivo pdf
+app.get('/baixarCrachas', (req, res) => {
+		res.download(publicDir+"uploads/crachas/Crachas.pdf", 'Crachas.pdf');
+		}, (err) => {
+        	console.log(err);
+ 		});
 
 function processarConteudo2(conteudo) {
 	// Processa o conteúdo que será escrito nos crachás
@@ -75,7 +88,7 @@ function processarConteudo2(conteudo) {
 		conteudo[i] = conteudo[i].split("\t");
 	};
 	return conteudo;
-};
+}
 
 function escreverCracha(conteudo, fonte, nomeArquivoBg, nomeArquivoLogo, logoPlace, indice) {
 	/*A função escreve todas as informações passadas no crachá. A variável conteúdo recebe as informações
@@ -109,48 +122,44 @@ function escreverCracha(conteudo, fonte, nomeArquivoBg, nomeArquivoLogo, logoPla
 				image.print(font, w/2 - textWidth/2, y, conteudo[i]);
 				y = y+textHeight;
 			}
-
-			image.write(publicDir+"uploads/crachás/Crachá-"+indice.toString()+".jpg");
+			//O bloco de código a seguir posiciona a logo do evento no crachá, caso o usuário tenha
+			//feito o upload. Caso não, ele apenas salva a imagem.
+	  		if(nomeArquivoLogo!=null) {
+				Jimp.read(publicDir+"uploads/"+nomeArquivoLogo)
+				.then(logo => {
+					logo.resize(Jimp.AUTO, h/4)
+					if(logoPlace==1){
+						var logoY = 30;
+					} else {
+						var logoY = h-logo.bitmap.height-30;
+					}
+					image.composite(logo, w/2-logo.bitmap.width/2, logoY);
+					//Como a imagem gerada do crachá é para fins de impressão, ela é sempre
+					//salva no formato jpg
+					image.write(publicDir+"uploads/crachas/Cracha-"+indice.toString()+".jpg");
+				});
+			} else {
+				image.write(publicDir+"uploads/crachas/Cracha-"+indice.toString()+".jpg");
+			}
   		});
-
-		//O bloco de código a seguir posiciona a logo do evento no crachá, caso o usuário tenha
-		//feito o upload
-  		if(nomeArquivoLogo!=null) {
-			Jimp.read(publicDir+"uploads/"+nomeArquivoLogo)
-			.then(logo => {
-				logo.resize(Jimp.AUTO, h/4)
-				if(logoPlace==1){
-					var logoY = 20;
-				} else {
-					var logoY = h-logo.bitmap.height-20;
-				}
-				image.composite(logo, w/2-logo.bitmap.width/2, logoY);
-				//Como a imagem gerada do crachá é para fins de impressão, ela é sempre
-				//salva no formato jpg
-				image.write(publicDir+"uploads/crachás/Crachá-"+indice.toString()+".jpg");
-			});
-		}
 		
 	})
   	.catch(err => {
     	console.error(err)
   	});
-	}
-
-function gerarPDF(qtdCrachas) {
-	//A função recebe a quantidade de Crachas, e adiciona todas as imagens de crachás salvas
-	//na pasta /uploads/Crachás a um arquivo PDF
-	const doc = new PDFDocument({autoFirstPage: false});
-
-	for (i = 0; i < qtdCrachas; i++){
-		console.log(publicDir+"uploads/crachás/Crachá-"+i.toString()+".jpg");
-		doc.addPage();
-		doc.image(publicDir+"uploads/crachás/Crachá-"+i.toString()+".jpg", {width: 500, align: 'center', valign: 'center'});
-	}
-
-	doc.pipe(fs.createWriteStream(publicDir+"uploads/Crachás/Crachá.pdf"));
-	doc.end()
 }
 
+function gerarPDF(qtdCrachas, res) {
+	//A função recebe a quantidade de Crachas, e adiciona todas as imagens de crachás salvas
+	//na pasta /uploads/Crachás a um arquivo PDF
+	const doc = new PDFDocument();
+	for (i = 0; i < qtdCrachas; i++){
+		fileDir=(publicDir+"uploads/crachas/Cracha-"+i.toString()+".jpg");
+		doc.addPage();
+		doc.image(fileDir, {width: 298, align: 'center', valign: 'center'})
+		doc.text('  ');
+	}
 
- 
+	doc.pipe(fs.createWriteStream(publicDir+"uploads/crachas/Crachas.pdf"));
+	doc.end();
+}
